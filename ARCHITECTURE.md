@@ -15,43 +15,41 @@ The platform is designed to:
 
 ```mermaid
 flowchart TD
-    subgraph Clients["1. Client Layer"]
-        Dashboard["🖥️ React Dashboard\n(Vite + Tailwind CSS)"]
-        APIClient["🌐 External API Client\n(Bearer JWT Auth)"]
+    subgraph Clients["Clients & Users"]
+        Browser["🖥️ React Dashboard - Vite & Tailwind"]
+        ExternalAPI["🌐 REST API Consumers & Webhooks"]
     end
 
-    subgraph APILayer["2. Backend API & Control Plane (Express + Node.js)"]
-        Router["HTTP Router\n(/api/auth, /api/projects, /api/queues, /api/jobs, /api/workers)"]
+    subgraph APILayer["Backend API Layer - Express & Node.js"]
+        Router["HTTP Router"]
         AuthGuard["JWT & RBAC Middleware"]
-        Scheduler["⏱️ Background Scheduler Engine\n(Cron & Delayed Tick + Stale Worker Reaper)"]
-        SocketEngine["⚡ Socket.IO Event Broadcaster\n(job:update, worker:update, metrics:update)"]
+        Scheduler["⏱️ Background Scheduler Engine"]
+        SocketEngine["⚡ Socket.IO Event Broadcaster"]
     end
 
-    subgraph DataPlane["3. Database & Concurrency Layer (PostgreSQL)"]
-        DB[("🐘 PostgreSQL Engine\n(ACID Serializable Transactions)")]
-        Locking["🔒 Atomic Claim Engine\n(SELECT ... FOR UPDATE SKIP LOCKED)"]
-        DB --- Locking
+    subgraph DataPlane["Data Persistence - PostgreSQL"]
+        DB["🐘 PostgreSQL Engine - Atomic Locking"]
     end
 
-    subgraph WorkerPlane["4. Distributed Worker Fleet (Worker Daemon)"]
-        W1["👷 Worker Node 1\n(Poller + Concurrent Execution + Heartbeat)"]
-        W2["👷 Worker Node 2\n(Poller + Concurrent Execution + Heartbeat)"]
-        WN["👷 Worker Node N\n(Poller + Concurrent Execution + Heartbeat)"]
+    subgraph WorkerPlane["Distributed Worker Fleet"]
+        W1["👷 Worker Node 1"]
+        W2["👷 Worker Node 2"]
+        WN["👷 Worker Node N"]
     end
 
-    Dashboard <-->|REST API + WebSockets| APILayer
-    APIClient -->|REST API| APILayer
+    Browser <-->|"REST API + WebSockets"| APILayer
+    APIClient -->|"REST API - Bearer JWT"| APILayer
 
-    APILayer <-->|Prisma ORM Queries| DB
-    Scheduler -->|Cron & Delayed Promotion| DB
+    APILayer <-->|"Prisma ORM Queries"| DB
+    Scheduler -->|"Cron & Delayed Promotion"| DB
 
-    W1 <-->|Claim Jobs & Send Heartbeats| APILayer
-    W2 <-->|Claim Jobs & Send Heartbeats| APILayer
-    WN <-->|Claim Jobs & Send Heartbeats| APILayer
+    W1 <-->|"Claim Jobs & Send Heartbeats"| APILayer
+    W2 <-->|"Claim Jobs & Send Heartbeats"| APILayer
+    WN <-->|"Claim Jobs & Send Heartbeats"| APILayer
 
-    W1 -->|Stream Execution Logs & Status| APILayer
-    W2 -->|Stream Execution Logs & Status| APILayer
-    WN -->|Stream Execution Logs & Status| APILayer
+    W1 -->|"Stream Execution Logs"| APILayer
+    W2 -->|"Stream Execution Logs"| APILayer
+    WN -->|"Stream Execution Logs"| APILayer
 ```
 
 ---
@@ -103,7 +101,7 @@ erDiagram
         string id PK
         string email UK
         string passwordHash
-        string role "ADMIN | MEMBER"
+        string role
         string orgId FK
     }
 
@@ -120,10 +118,10 @@ erDiagram
         string name
         int priority
         int concurrencyLimit
-        string retryStrategy "FIXED | LINEAR | EXPONENTIAL"
+        string retryStrategy
         int maxRetries
         int retryDelayMs
-        string status "ACTIVE | PAUSED"
+        string status
     }
 
     JOB {
@@ -131,8 +129,8 @@ erDiagram
         string queueId FK
         string name
         json payload
-        string jobType "IMMEDIATE | DELAYED | SCHEDULED | RECURRING | BATCH"
-        string status "QUEUED | SCHEDULED | CLAIMED | RUNNING | COMPLETED | FAILED | DEAD_LETTER"
+        string jobType
+        string status
         int priority
         int maxRetries
         int currentAttempt
@@ -146,7 +144,7 @@ erDiagram
         string jobId FK
         string workerId FK
         int attemptNumber
-        string status "RUNNING | COMPLETED | FAILED"
+        string status
         int durationMs
         string errorMessage
     }
@@ -164,7 +162,7 @@ erDiagram
         string id PK
         string hostname
         int pid
-        string status "ONLINE | OFFLINE | BUSY | IDLE"
+        string status
         datetime lastHeartbeatAt
         int jobsProcessed
     }

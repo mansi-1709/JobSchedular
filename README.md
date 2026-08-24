@@ -20,38 +20,38 @@ This project is built to solve the challenges of background job execution at sca
 ```mermaid
 flowchart TD
     subgraph Clients["Clients & Users"]
-        Browser["🖥️ React Dashboard (Vite + Tailwind)"]
-        ExternalAPI["🌐 REST API Consumers / Webhooks"]
+        Browser["🖥️ React Dashboard - Vite & Tailwind"]
+        ExternalAPI["🌐 REST API Consumers & Webhooks"]
     end
 
-    subgraph BackendCluster["Backend API Layer (Express + Node.js)"]
+    subgraph BackendCluster["Backend API Layer - Express & Node.js"]
         AuthMiddleware["🔐 JWT & RBAC Auth"]
-        APIRoutes["📡 REST Endpoints (/api/jobs, /api/queues, /api/workers)"]
-        SchedulerService["⏱️ Recurring & Delayed Scheduler Tick"]
+        APIRoutes["📡 REST Endpoints"]
+        SchedulerService["⏱️ Recurring & Delayed Scheduler"]
         SocketServer["⚡ Socket.IO Live Emitter"]
     end
 
-    subgraph DatabaseLayer["Data Persistence (PostgreSQL + Prisma)"]
-        PG[("🐘 PostgreSQL Database\n(Atomic FOR UPDATE SKIP LOCKED)")]
+    subgraph DatabaseLayer["Data Persistence - PostgreSQL"]
+        PG["🐘 PostgreSQL Database - Atomic Locking"]
     end
 
     subgraph WorkerFleet["Distributed Worker Daemon Fleet"]
-        Worker1["👷 Worker Node 1\n(Poller + Heartbeat)"]
-        Worker2["👷 Worker Node 2\n(Poller + Heartbeat)"]
-        WorkerN["👷 Worker Node N\n(Poller + Heartbeat)"]
+        Worker1["👷 Worker Node 1"]
+        Worker2["👷 Worker Node 2"]
+        WorkerN["👷 Worker Node N"]
     end
 
-    Browser <-->|REST API + WebSockets| BackendCluster
-    ExternalAPI -->|REST API (Bearer JWT)| BackendCluster
+    Browser <-->|"REST API + WebSockets"| BackendCluster
+    ExternalAPI -->|"REST API - Bearer JWT"| BackendCluster
 
-    BackendCluster -->|Transactions & Queries| PG
-    SchedulerService -->|Tick & Heartbeat Reaping| PG
+    BackendCluster -->|"Transactions & Queries"| PG
+    SchedulerService -->|"Tick & Heartbeat Reaping"| PG
 
-    Worker1 <-->|Claim & Heartbeats| BackendCluster
-    Worker2 <-->|Claim & Heartbeats| BackendCluster
-    WorkerN <-->|Claim & Heartbeats| BackendCluster
+    Worker1 <-->|"Claim & Heartbeats"| BackendCluster
+    Worker2 <-->|"Claim & Heartbeats"| BackendCluster
+    WorkerN <-->|"Claim & Heartbeats"| BackendCluster
 
-    Worker1 -->|Direct DB Queries / API| PG
+    Worker1 -->|"Direct DB Queries / API"| PG
 ```
 
 ---
@@ -83,7 +83,7 @@ erDiagram
         string id PK
         string email UK
         string passwordHash
-        string role "ADMIN | MEMBER"
+        string role
         string orgId FK
     }
 
@@ -100,10 +100,10 @@ erDiagram
         string name
         int priority
         int concurrencyLimit
-        string retryStrategy "FIXED | LINEAR | EXPONENTIAL"
+        string retryStrategy
         int maxRetries
         int retryDelayMs
-        string status "ACTIVE | PAUSED"
+        string status
     }
 
     JOB {
@@ -111,8 +111,8 @@ erDiagram
         string queueId FK
         string name
         json payload
-        string jobType "IMMEDIATE | DELAYED | SCHEDULED | RECURRING | BATCH"
-        string status "QUEUED | SCHEDULED | CLAIMED | RUNNING | COMPLETED | FAILED | DEAD_LETTER"
+        string jobType
+        string status
         int priority
         int maxRetries
         int currentAttempt
@@ -126,7 +126,7 @@ erDiagram
         string jobId FK
         string workerId FK
         int attemptNumber
-        string status "RUNNING | COMPLETED | FAILED"
+        string status
         int durationMs
         string errorMessage
     }
@@ -144,7 +144,7 @@ erDiagram
         string id PK
         string hostname
         int pid
-        string status "ONLINE | OFFLINE | BUSY | IDLE"
+        string status
         datetime lastHeartbeatAt
         int jobsProcessed
     }
