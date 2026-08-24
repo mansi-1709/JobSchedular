@@ -3,7 +3,6 @@ import { metricsService } from '../services/metrics.service';
 import type { Metrics } from '../types/api.types';
 import { Spinner } from '../components/ui/Spinner';
 import { Card } from '../components/ui/Card';
-import { useTheme } from '../context/ThemeContext';
 import {
   AreaChart,
   Area,
@@ -33,7 +32,6 @@ export function MetricsPage() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const { theme } = useTheme();
 
   const fetchMetrics = async () => {
     setRefreshing(true);
@@ -93,9 +91,9 @@ export function MetricsPage() {
     return padded;
   })();
 
-  const isDark = theme === 'dark';
-  const gridColor = isDark ? '#1e2238' : '#e2e8f0';
-  const textColor = isDark ? '#94a3b8' : '#64748b';
+  const isDark = true;
+  const gridColor = '#1e2238';
+  const textColor = '#94a3b8';
 
   return (
     <div className="space-y-6 animate-fade-in">

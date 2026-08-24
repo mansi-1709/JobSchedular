@@ -2,7 +2,6 @@ import React, { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
-import { useTheme } from '../context/ThemeContext';
 import {
   LayoutDashboard,
   FolderGit2,
@@ -14,14 +13,11 @@ import {
   LogOut,
   Zap,
   Radio,
-  Sun,
-  Moon,
 } from 'lucide-react';
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
   const { connected } = useSocket();
-  const { theme, toggleTheme } = useTheme();
 
   const navItems = [
     { name: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -34,37 +30,22 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#080912] text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div className="flex h-screen overflow-hidden bg-[#080912] text-slate-100">
       {/* Sidebar */}
-      <aside className="w-64 glass-elevated border-r border-slate-200 dark:border-indigo-950/40 flex flex-col z-20 shadow-2xl">
-        <div className="p-5 border-b border-slate-200 dark:border-indigo-950/40 bg-gradient-to-b from-indigo-50/50 dark:from-indigo-950/30 to-transparent">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-extrabold tracking-tight text-indigo-950 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-indigo-200 dark:via-purple-200 dark:to-pink-200">
-                  JobScheduler
-                </h1>
-                <p className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 truncate max-w-[120px]" title={user?.organization?.name || 'Organization'}>
-                  {user?.organization?.name || 'Acme Corporation'}
-                </p>
-              </div>
+      <aside className="w-64 glass-elevated border-r border-indigo-950/40 flex flex-col z-20 shadow-2xl">
+        <div className="p-5 border-b border-indigo-950/40 bg-gradient-to-b from-indigo-950/30 to-transparent">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+              <Zap className="w-5 h-5 text-white" />
             </div>
-
-            {/* Light / Dark Mode Toggle */}
-            <button
-              onClick={toggleTheme}
-              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
-              className="p-2 rounded-xl bg-slate-200/70 dark:bg-white/5 hover:bg-slate-300/80 dark:hover:bg-white/10 text-slate-700 dark:text-indigo-300 transition-all duration-200 border border-slate-300 dark:border-white/10 shadow-sm"
-            >
-              {theme === 'dark' ? (
-                <Sun className="w-4 h-4 text-amber-400 animate-fade-in" />
-              ) : (
-                <Moon className="w-4 h-4 text-indigo-600 animate-fade-in" />
-              )}
-            </button>
+            <div>
+              <h1 className="text-lg font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200">
+                JobScheduler
+              </h1>
+              <p className="text-[11px] font-semibold text-indigo-400 truncate max-w-[130px]" title={user?.organization?.name || 'Organization'}>
+                {user?.organization?.name || 'Acme Corporation'}
+              </p>
+            </div>
           </div>
 
           {/* Live Sync Status */}

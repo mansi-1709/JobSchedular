@@ -5,41 +5,23 @@
 /* ── Dual Theme Variables & Custom base ────────────────── */
 @layer base {
   :root {
-    --surface-default: 248 250 252;   /* #f8fafc */
-    --surface-card: 255 255 255;      /* #ffffff */
-    --surface-elevated: 255 255 255;  /* #ffffff */
-    --surface-border: 226 232 240;    /* #e2e8f0 */
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-  }
-
-  html.dark {
-    --surface-default: 11 12 22;      /* #0b0c16 */
-    --surface-card: 18 19 36;         /* #121324 */
-    --surface-elevated: 26 27 50;     /* #1a1b32 */
-    --surface-border: 38 39 68;       /* #262744 */
+    --bg-main: #080912;
+    --bg-surface: #121324;
+    --bg-surface-elevated: #1a1b32;
+    --border-color: #262744;
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
   }
 
   * {
-    border-color: rgb(var(--surface-border));
+    border-color: #262744;
   }
   
   body {
-    background-color: rgb(var(--surface-default));
-    color: var(--text-main);
+    background: radial-gradient(circle at 50% 0%, #161836 0%, #0b0c16 65%);
+    color: #f8fafc;
     font-family: 'Inter', system-ui, sans-serif;
     min-height: 100vh;
-    transition: background-color 0.25s ease, color 0.25s ease;
-  }
-
-  html.dark body {
-    background: radial-gradient(circle at 50% 0%, #161836 0%, #0b0c16 65%);
-  }
-
-  html.light body {
-    background: radial-gradient(circle at 50% 0%, #ffffff 0%, #f8fafc 100%);
   }
 
   ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -48,44 +30,20 @@
   ::-webkit-scrollbar-thumb:hover { @apply bg-indigo-500/50; }
 }
 
-/* ── Components & Theme Modifiers ───────────────────────── */
+/* ── Components & Dark Theme Styling ───────────────────────── */
 @layer components {
   .glass {
-    @apply transition-colors duration-300;
-  }
-
-  html.dark .glass {
     background: rgba(18, 19, 36, 0.75);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(99, 102, 241, 0.15);
   }
 
-  html.light .glass {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  }
-
   .glass-elevated {
-    @apply transition-colors duration-300;
-  }
-
-  html.dark .glass-elevated {
     background: rgba(26, 27, 50, 0.85);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     border: 1px solid rgba(99, 102, 241, 0.2);
-  }
-
-  html.light .glass-elevated {
-    background: #ffffff;
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
   }
 
   .glow-border {
@@ -94,21 +52,21 @@
   }
 
   /* Status badges */
-  .badge-queued    { @apply bg-slate-500/10 text-slate-500 dark:text-slate-300 border border-slate-500/20; }
-  .badge-scheduled { @apply bg-blue-500/10 text-blue-600 dark:text-blue-300 border border-blue-500/20; }
-  .badge-claimed   { @apply bg-amber-500/10 text-amber-600 dark:text-amber-300 border border-amber-500/20; }
-  .badge-running   { @apply bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 border border-indigo-500/20; }
-  .badge-completed { @apply bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-500/20; }
-  .badge-failed    { @apply bg-rose-500/10 text-rose-600 dark:text-rose-300 border border-rose-500/20; }
-  .badge-dead_letter { @apply bg-rose-950/20 text-rose-600 dark:text-rose-300 border border-rose-800/30; }
-  .badge-cancelled { @apply bg-gray-500/10 text-gray-500 dark:text-gray-400 border border-gray-500/20; }
+  .badge-queued    { @apply bg-slate-500/10 text-slate-300 border border-slate-500/20; }
+  .badge-scheduled { @apply bg-blue-500/10 text-blue-300 border border-blue-500/20; }
+  .badge-claimed   { @apply bg-amber-500/10 text-amber-300 border border-amber-500/20; }
+  .badge-running   { @apply bg-indigo-500/10 text-indigo-300 border border-indigo-500/20; }
+  .badge-completed { @apply bg-emerald-500/10 text-emerald-300 border border-emerald-500/20; }
+  .badge-failed    { @apply bg-rose-500/10 text-rose-300 border border-rose-500/20; }
+  .badge-dead_letter { @apply bg-rose-950/20 text-rose-300 border border-rose-800/30; }
+  .badge-cancelled { @apply bg-gray-500/10 text-gray-400 border border-gray-500/20; }
 
-  .badge-online  { @apply bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-500/20; }
-  .badge-offline { @apply bg-gray-500/10 text-gray-500 dark:text-gray-400 border border-gray-500/20; }
-  .badge-busy    { @apply bg-purple-500/10 text-purple-600 dark:text-purple-300 border border-purple-500/20; }
-  .badge-idle    { @apply bg-cyan-500/10 text-cyan-600 dark:text-cyan-300 border border-cyan-500/20; }
-  .badge-active  { @apply bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-500/20; }
-  .badge-paused  { @apply bg-orange-500/10 text-orange-600 dark:text-orange-300 border border-orange-500/20; }
+  .badge-online  { @apply bg-emerald-500/10 text-emerald-300 border border-emerald-500/20; }
+  .badge-offline { @apply bg-gray-500/10 text-gray-400 border border-gray-500/20; }
+  .badge-busy    { @apply bg-purple-500/10 text-purple-300 border border-purple-500/20; }
+  .badge-idle    { @apply bg-cyan-500/10 text-cyan-300 border border-cyan-500/20; }
+  .badge-active  { @apply bg-emerald-500/10 text-emerald-300 border border-emerald-500/20; }
+  .badge-paused  { @apply bg-orange-500/10 text-orange-300 border border-orange-500/20; }
 
   /* Buttons */
   .btn {
@@ -121,8 +79,8 @@
            shadow-lg shadow-indigo-600/30 active:scale-[0.98];
   }
   .btn-secondary {
-    @apply btn border border-gray-300 dark:border-white/10 bg-white/70 dark:bg-white/5 
-           text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 
+    @apply btn border border-white/10 bg-white/5 
+           text-gray-200 hover:bg-white/10 
            focus:ring-indigo-500 backdrop-blur-md;
   }
   .btn-danger {
@@ -140,9 +98,9 @@
 
   /* Input fields */
   .input {
-    @apply w-full rounded-xl border border-gray-300 dark:border-white/10 
-           bg-white dark:bg-black/30 px-3.5 py-2.5 text-sm
-           text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none 
+    @apply w-full rounded-xl border border-white/10 
+           bg-black/30 px-3.5 py-2.5 text-sm
+           text-white placeholder-gray-500 focus:outline-none 
            focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200 shadow-inner;
   }
 
@@ -151,43 +109,29 @@
   }
 
   .label {
-    @apply block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1.5;
+    @apply block text-xs font-semibold text-gray-400 mb-1.5;
   }
 
   /* Cards */
   .card {
     @apply rounded-2xl p-6 transition-all duration-200;
-  }
-  html.dark .card {
     background-color: rgba(18, 19, 36, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  }
-  html.light .card {
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   }
 
   /* Table */
   .table-container {
     @apply overflow-x-auto rounded-2xl transition-all duration-200;
-  }
-  html.dark .table-container {
     background-color: rgba(18, 19, 36, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
-  html.light .table-container {
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-  }
   
   table { @apply w-full border-collapse; }
-  thead tr { @apply border-b border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/[0.02]; }
-  thead th { @apply px-5 py-3.5 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider; }
-  tbody tr { @apply border-b border-gray-100 dark:border-white/5 hover:bg-indigo-50/40 dark:hover:bg-white/[0.02] transition-colors duration-150; }
-  tbody td { @apply px-5 py-3.5 text-sm text-gray-800 dark:text-gray-200; }
+  thead tr { @apply border-b border-white/10 bg-white/[0.02]; }
+  thead th { @apply px-5 py-3.5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider; }
+  tbody tr { @apply border-b border-white/5 hover:bg-white/[0.02] transition-colors duration-150; }
+  tbody td { @apply px-5 py-3.5 text-sm text-gray-200; }
 
   /* Heartbeat indicator */
   .heartbeat-dot {
@@ -198,9 +142,9 @@
   .log-entry {
     @apply font-mono text-xs py-1.5 px-3 rounded-lg border-l-2;
   }
-  .log-info  { @apply text-gray-700 dark:text-gray-300 border-blue-500 bg-blue-500/10; }
-  .log-warn  { @apply text-amber-700 dark:text-amber-300 border-amber-500 bg-amber-500/10; }
-  .log-error { @apply text-rose-700 dark:text-rose-300 border-rose-500 bg-rose-500/10; }
+  .log-info  { @apply text-gray-300 border-blue-500 bg-blue-500/10; }
+  .log-warn  { @apply text-amber-300 border-amber-500 bg-amber-500/10; }
+  .log-error { @apply text-rose-300 border-rose-500 bg-rose-500/10; }
   .log-debug { @apply text-gray-500 border-gray-400 bg-gray-500/10; }
 }
 
