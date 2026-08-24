@@ -7,12 +7,23 @@ import { Spinner } from '../components/ui/Spinner';
 import { Badge } from '../components/ui/Badge';
 import { Link } from 'react-router-dom';
 import { Card, CardHeader } from '../components/ui/Card';
+import {
+  RotateCw,
+  PlusCircle,
+  AlertTriangle,
+  CheckCircle2,
+  Cpu,
+  Layers,
+  ArrowRight,
+} from 'lucide-react';
 
 export function DashboardPage() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchMetrics = async () => {
+    setRefreshing(true);
     try {
       const data = await metricsService.getMetrics();
       setMetrics(data);
@@ -20,6 +31,7 @@ export function DashboardPage() {
       console.error('Failed to fetch metrics', err);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -32,71 +44,143 @@ export function DashboardPage() {
   });
 
   if (loading) {
-    return <div className="flex h-full items-center justify-center"><Spinner size="lg" /></div>;
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
   }
 
   if (!metrics) return null;
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-white">Dashboard Overview</h1>
-        <button onClick={fetchMetrics} className="btn-secondary btn-sm">Refresh</button>
+    <div className="space-y-8 animate-fade-in">
+      {/* Header Banner */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-indigo-950/60 via-purple-950/40 to-slate-900/60 border border-indigo-500/20 shadow-xl backdrop-blur-xl">
+        <div>
+          <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2.5">
+            System Operations Control Center
+          </h1>
+          <p className="text-sm text-gray-300/80 mt-1">
+            Real-time telemetry, asynchronous worker fleet monitoring, and queue throughput.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={fetchMetrics}
+            disabled={refreshing}
+            className="btn-secondary btn-sm flex items-center gap-2 border-indigo-500/30 text-gray-200 hover:text-white"
+          >
+            <RotateCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-indigo-400' : ''}`} />
+            <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
+          </button>
+          <Link
+            to="/jobs"
+            className="btn-primary btn-sm flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-600/30"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Create Job</span>
+          </Link>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Jobs" value={metrics.summary.total} />
-        <StatCard title="Queued Jobs" value={metrics.summary.queued} />
-        <StatCard title="Running Jobs" value={metrics.summary.running} />
-        <StatCard title="Completed Jobs" value={metrics.summary.completed} />
-        <StatCard title="Failed Jobs" value={metrics.summary.failed} trend="down" trendLabel="Needs Attention" />
-        <StatCard title="Dead Letter Jobs" value={metrics.summary.deadLetter} trend="down" trendLabel="Unresolved" />
-        <StatCard title="Active Workers" value={metrics.summary.activeWorkers} trend="up" trendLabel="Online" />
+      {/* KPI Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard title="Total Jobs Ingested" value={metrics.summary.total} />
+        <StatCard title="Queued (Pending Execution)" value={metrics.summary.queued} />
+        <StatCard title="Active Running Jobs" value={metrics.summary.running} trend="up" trendLabel="In Flight" />
+        <StatCard title="Successfully Completed" value={metrics.summary.completed} trend="up" trendLabel="Processed" />
+        <StatCard title="Failed Retrying Jobs" value={metrics.summary.failed} trend="down" trendLabel="Auto-Retrying" />
+        <StatCard title="Dead Letter Queue" value={metrics.summary.deadLetter} trend="down" trendLabel="Permanent Failures" />
+        <StatCard title="Active Worker Nodes" value={metrics.summary.activeWorkers} trend="up" trendLabel="Online" />
       </div>
 
+      {/* Queue Health & Failures Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Active Queues Card */}
         <Card>
-          <CardHeader title="Queue Status" />
-          <div className="space-y-4">
+          <CardHeader
+            title="Queue Concurrency & Workload"
+            action={
+              <Link to="/queues" className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
+                <span>Manage Queues</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            }
+          />
+          <div className="space-y-3 mt-4">
             {metrics.queueStats.map((q) => (
-              <div key={q.queueId} className="flex items-center justify-between p-3 rounded-lg bg-surface-elevated border border-surface-border">
+              <div
+                key={q.queueId}
+                className="p-4 rounded-xl bg-surface-elevated/70 border border-surface-border/60 hover:border-indigo-500/40 transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md"
+              >
                 <div>
-                  <h4 className="font-medium text-white">{q.name}</h4>
-                  <div className="text-xs text-gray-400 mt-1 flex gap-3">
-                    <span>Total: {q.total}</span>
-                    <span>Running: {q.running}</span>
+                  <div className="flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-indigo-400" />
+                    <h4 className="font-semibold text-white text-sm">{q.name}</h4>
+                  </div>
+                  <div className="text-xs text-gray-400 mt-1.5 flex gap-4">
+                    <span>Total: <strong className="text-gray-200">{q.total}</strong></span>
+                    <span>Running: <strong className="text-indigo-300">{q.running}</strong></span>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Badge status="COMPLETED">{q.completed}</Badge>
-                  <Badge status="FAILED">{q.failed}</Badge>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                    {q.completed} Completed
+                  </span>
+                  {q.failed > 0 && (
+                    <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-500/10 text-rose-300 border border-rose-500/20">
+                      {q.failed} Failed
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
             {metrics.queueStats.length === 0 && (
-              <p className="text-gray-400 text-sm text-center py-4">No queues found. Create one in Projects.</p>
+              <div className="text-center py-8 text-gray-400">
+                <Layers className="w-10 h-10 mx-auto text-gray-600 mb-2" />
+                <p className="text-sm">No queues configured yet. Create a queue in Projects.</p>
+              </div>
             )}
           </div>
         </Card>
 
+        {/* Recent Failures & DLQ Alert Card */}
         <Card>
-          <CardHeader title="Recent Failures" action={<Link to="/jobs?status=FAILED" className="text-xs text-primary-400 hover:text-primary-300">View All</Link>} />
-          <div className="space-y-3">
+          <CardHeader
+            title="Dead Letter & Recent Incident Log"
+            action={
+              <Link to="/dlq" className="text-xs font-semibold text-rose-400 hover:text-rose-300 flex items-center gap-1">
+                <span>View DLQ</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            }
+          />
+          <div className="space-y-3 mt-4">
             {metrics.recentFailures.map((job) => (
-              <div key={job.id} className="p-3 rounded-lg bg-red-950/20 border border-red-900/30 flex justify-between items-center">
-                <div>
-                  <Link to={`/jobs/${job.id}`} className="font-medium text-red-200 hover:text-red-100">{job.name}</Link>
-                  <p className="text-xs text-gray-400 mt-1">Queue: {job.queue?.name} • Attempt {job.currentAttempt}</p>
+              <div
+                key={job.id}
+                className="p-3.5 rounded-xl bg-rose-950/20 border border-rose-900/40 hover:border-rose-700/50 transition-all duration-200 flex justify-between items-center gap-3"
+              >
+                <div className="overflow-hidden flex-1">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+                    <Link to={`/jobs/${job.id}`} className="font-semibold text-sm text-rose-200 hover:text-rose-100 truncate">
+                      {job.name}
+                    </Link>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1 truncate">
+                    Queue: {job.queue?.name || 'Default'} • Attempt {job.currentAttempt}/{job.maxRetries}
+                  </p>
                 </div>
                 <Badge status={job.status} />
               </div>
             ))}
             {metrics.recentFailures.length === 0 && (
-              <div className="text-center py-8 text-gray-400">
-                <svg className="w-12 h-12 mx-auto text-emerald-500/50 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p>No recent failures. Everything is running smoothly!</p>
+              <div className="text-center py-10 text-gray-400 flex flex-col items-center justify-center">
+                <CheckCircle2 className="w-12 h-12 text-emerald-400/60 mb-3 animate-pulse" />
+                <p className="text-sm font-medium text-gray-200">Zero active system incidents.</p>
+                <p className="text-xs text-gray-500 mt-1">All background workloads are executing within SLA thresholds.</p>
               </div>
             )}
           </div>
