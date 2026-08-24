@@ -58,24 +58,24 @@ export function DeadLetterPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-rose-950/50 via-surface-elevated/70 to-slate-900/60 border border-rose-900/40 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-rose-950/40 via-surface-elevated/70 to-slate-900/40 border border-rose-500/20 shadow-xl backdrop-blur-xl">
         <div>
-          <h1 className="text-2xl font-black text-white flex items-center gap-2.5">
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
             <AlertOctagon className="w-6 h-6 text-rose-500" />
             Dead Letter Queue (DLQ)
           </h1>
-          <p className="text-sm text-gray-400 mt-1">
+          <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
             Quarantine area for unrecoverable jobs exceeding retry limits ({dlqJobs.length} permanent failures)
           </p>
         </div>
-        <Button onClick={fetchDLQ} variant="secondary" size="sm" className="flex items-center gap-1.5 border-rose-500/30 text-rose-200">
+        <Button onClick={fetchDLQ} variant="secondary" size="sm" className="flex items-center gap-1.5 border-rose-500/30 text-rose-700 dark:text-rose-200">
           <RotateCw className="w-3.5 h-3.5" />
           <span>Refresh Queue</span>
         </Button>
       </div>
 
       {/* Table Container */}
-      <div className="table-container shadow-xl">
+      <div className="table-container shadow-md">
         <table>
           <thead>
             <tr>
@@ -89,38 +89,38 @@ export function DeadLetterPage() {
           </thead>
           <tbody>
             {dlqJobs.map((dlq) => (
-              <tr key={dlq.id} className="hover:bg-rose-950/20 group">
+              <tr key={dlq.id} className="hover:bg-rose-500/10 group">
                 <td className="font-semibold">
                   <Link
                     to={`/jobs/${dlq.jobId}`}
-                    className="text-rose-200 hover:text-rose-400 transition-colors flex items-center gap-1.5"
+                    className="text-rose-700 dark:text-rose-200 hover:text-rose-900 dark:hover:text-rose-400 transition-colors flex items-center gap-1.5"
                   >
                     <span>{dlq.job?.name || 'Failed Job'}</span>
                   </Link>
-                  <span className="text-[11px] font-mono text-gray-500 block truncate max-w-[200px]">
+                  <span className="text-[11px] font-mono text-slate-400 dark:text-gray-500 block truncate max-w-[200px]">
                     {dlq.jobId}
                   </span>
                 </td>
                 <td>
-                  <span className="text-xs text-gray-300 flex items-center gap-1">
-                    <Layers className="w-3.5 h-3.5 text-indigo-400" />
+                  <span className="text-xs text-slate-700 dark:text-gray-300 flex items-center gap-1">
+                    <Layers className="w-3.5 h-3.5 text-indigo-500" />
                     {dlq.queue?.name || 'Default'}
                   </span>
                 </td>
                 <td>
-                  <span className="text-xs font-mono text-rose-300 font-bold bg-rose-950/40 px-2 py-0.5 rounded-md border border-rose-800/40">
+                  <span className="text-xs font-mono text-rose-700 dark:text-rose-300 font-bold bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20">
                     {dlq.attemptCount} tries
                   </span>
                 </td>
                 <td className="max-w-md">
                   <div
-                    className="text-xs font-mono text-rose-300 bg-rose-950/30 p-2 rounded-lg border border-rose-900/40 truncate"
+                    className="text-xs font-mono text-rose-800 dark:text-rose-300 bg-rose-500/10 p-2 rounded-lg border border-rose-500/20 truncate"
                     title={dlq.lastError || dlq.failureReason}
                   >
                     {dlq.lastError || dlq.failureReason}
                   </div>
                 </td>
-                <td className="text-xs text-gray-400">
+                <td className="text-xs text-slate-500 dark:text-gray-400">
                   {new Date(dlq.failedAt).toLocaleTimeString()} ({new Date(dlq.failedAt).toLocaleDateString()})
                 </td>
                 <td className="text-right">
@@ -140,9 +140,9 @@ export function DeadLetterPage() {
         </table>
         {dlqJobs.length === 0 && (
           <div className="text-center py-16">
-            <CheckCircle2 className="w-14 h-14 mx-auto text-emerald-400/70 mb-3 animate-pulse" />
-            <p className="text-base font-bold text-gray-200">Dead Letter Queue is Clear</p>
-            <p className="text-xs text-gray-500 mt-1">Zero unhandled exceptions or permanently failed tasks.</p>
+            <CheckCircle2 className="w-14 h-14 mx-auto text-emerald-500/70 mb-3 animate-pulse" />
+            <p className="text-base font-bold text-slate-900 dark:text-gray-200">Dead Letter Queue is Clear</p>
+            <p className="text-xs text-slate-500 dark:text-gray-500 mt-1">Zero unhandled exceptions or permanently failed tasks.</p>
           </div>
         )}
       </div>

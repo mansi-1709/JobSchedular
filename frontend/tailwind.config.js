@@ -37,10 +37,10 @@ export default {
           300: '#533483',
         },
         surface: {
-          DEFAULT: '#0f0f1a',
-          card: '#1a1a2e',
-          elevated: '#1e1e32',
-          border: '#2a2a45',
+          DEFAULT: 'rgb(var(--surface-default) / <alpha-value>)',
+          card: 'rgb(var(--surface-card) / <alpha-value>)',
+          elevated: 'rgb(var(--surface-elevated) / <alpha-value>)',
+          border: 'rgb(var(--surface-border) / <alpha-value>)',
         },
       },
       backgroundImage: {

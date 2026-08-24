@@ -138,13 +138,13 @@ export function JobsPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-indigo-950/40 via-surface-elevated/70 to-slate-900/40 border border-indigo-500/20 shadow-xl backdrop-blur-xl">
         <div>
-          <h1 className="text-2xl font-black text-white flex items-center gap-2.5">
-            <Cpu className="w-6 h-6 text-indigo-400" />
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
+            <Cpu className="w-6 h-6 text-indigo-500" />
             Jobs Explorer
           </h1>
-          <p className="text-sm text-gray-400 mt-1">
+          <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
             Real-time asynchronous job inspector & execution lifecycle telemetry ({total} total jobs)
           </p>
         </div>
@@ -158,7 +158,7 @@ export function JobsPage() {
           </button>
           <Button
             onClick={() => setIsCreating(true)}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-600/30 flex items-center gap-2"
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-600/30 flex items-center gap-2 text-white"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Create New Job</span>
@@ -168,15 +168,15 @@ export function JobsPage() {
 
       {/* Creation Modal / Form */}
       {isCreating && (
-        <Card className="border-indigo-500/40 bg-gradient-to-b from-indigo-950/40 to-surface/90 shadow-2xl p-6">
-          <div className="flex items-center justify-between border-b border-surface-border pb-4 mb-5">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-indigo-400" />
+        <Card className="border-indigo-500/40 bg-surface-elevated shadow-2xl p-6">
+          <div className="flex items-center justify-between border-b border-gray-200 dark:border-white/10 pb-4 mb-5">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-indigo-500" />
               Dispatch New Background Job
             </h3>
             <button
               onClick={() => setIsCreating(false)}
-              className="text-gray-400 hover:text-white text-sm"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-white text-sm"
             >
               ✕
             </button>
@@ -261,7 +261,7 @@ export function JobsPage() {
               </p>
             </div>
 
-            <div className="flex justify-end gap-3 pt-3 border-t border-surface-border">
+            <div className="flex justify-end gap-3 pt-3 border-t border-gray-200 dark:border-white/10">
               <Button type="button" variant="secondary" onClick={() => setIsCreating(false)}>
                 Cancel
               </Button>
@@ -274,7 +274,7 @@ export function JobsPage() {
       )}
 
       {/* Filter Bar & Search */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 glass rounded-2xl border border-surface-border">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 glass rounded-2xl border border-slate-200 dark:border-white/10">
         {/* Status Pill Filters */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
           {statusFilters.map(sf => (
@@ -284,7 +284,7 @@ export function JobsPage() {
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
                 status === sf.value
                   ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                  : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'
+                  : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-white/5'
               }`}
             >
               {sf.label}
@@ -295,7 +295,7 @@ export function JobsPage() {
         {/* Queue Dropdown Filter */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <Layers className="w-4 h-4 text-gray-400" />
+            <Layers className="w-4 h-4 text-slate-400" />
             <select
               className="select text-xs py-1.5 px-3 min-w-[150px]"
               value={queueId}
@@ -318,7 +318,7 @@ export function JobsPage() {
           <Spinner size="lg" />
         </div>
       ) : (
-        <div className="table-container shadow-xl">
+        <div className="table-container shadow-md">
           <table>
             <thead>
               <tr>
@@ -337,11 +337,11 @@ export function JobsPage() {
                   <td className="font-semibold">
                     <Link
                       to={`/jobs/${job.id}`}
-                      className="text-indigo-200 hover:text-indigo-400 transition-colors flex items-center gap-1.5"
+                      className="text-indigo-600 dark:text-indigo-300 hover:text-indigo-800 dark:hover:text-indigo-100 transition-colors flex items-center gap-1.5"
                     >
                       <span>{job.name}</span>
                     </Link>
-                    <span className="text-[11px] font-mono text-gray-500 block truncate max-w-[220px]">
+                    <span className="text-[11px] font-mono text-slate-400 dark:text-gray-500 block truncate max-w-[220px]">
                       {job.id}
                     </span>
                   </td>
@@ -349,28 +349,28 @@ export function JobsPage() {
                     <Badge status={job.status} />
                   </td>
                   <td>
-                    <span className="text-xs font-medium text-gray-300 flex items-center gap-1">
-                      <Layers className="w-3.5 h-3.5 text-indigo-400" />
+                    <span className="text-xs font-medium text-slate-700 dark:text-gray-300 flex items-center gap-1">
+                      <Layers className="w-3.5 h-3.5 text-indigo-500" />
                       {job.queue?.name || 'Default'}
                     </span>
                   </td>
                   <td>
-                    <span className="text-[11px] font-semibold uppercase px-2 py-0.5 rounded-md bg-white/5 text-gray-300 border border-white/10">
+                    <span className="text-[11px] font-semibold uppercase px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-300 border border-slate-200 dark:border-white/10">
                       {job.jobType}
                     </span>
                   </td>
                   <td>
-                    <span className="text-xs text-gray-300 font-medium">
+                    <span className="text-xs text-slate-700 dark:text-gray-300 font-medium">
                       {job.currentAttempt} / {job.maxRetries}
                     </span>
                   </td>
-                  <td className="text-xs text-gray-400">
+                  <td className="text-xs text-slate-500 dark:text-gray-400">
                     {new Date(job.createdAt).toLocaleTimeString()} ({new Date(job.createdAt).toLocaleDateString()})
                   </td>
                   <td className="text-right">
                     <Link to={`/jobs/${job.id}`}>
                       <Button variant="secondary" size="sm" className="group-hover:border-indigo-500/50">
-                        <ExternalLink className="w-3.5 h-3.5 mr-1 text-indigo-400" />
+                        <ExternalLink className="w-3.5 h-3.5 mr-1 text-indigo-500" />
                         Inspect
                       </Button>
                     </Link>
@@ -381,9 +381,9 @@ export function JobsPage() {
           </table>
           {jobs.length === 0 && (
             <div className="text-center py-16 text-gray-400">
-              <Cpu className="w-12 h-12 mx-auto text-gray-600 mb-3" />
-              <p className="font-medium text-gray-300">No jobs found in this view.</p>
-              <p className="text-xs text-gray-500 mt-1">Try changing status filters or dispatch a new job.</p>
+              <Cpu className="w-12 h-12 mx-auto text-gray-400 mb-3" />
+              <p className="font-medium text-slate-700 dark:text-gray-300">No jobs found in this view.</p>
+              <p className="text-xs text-slate-500 dark:text-gray-500 mt-1">Try changing status filters or dispatch a new job.</p>
             </div>
           )}
         </div>
@@ -401,7 +401,7 @@ export function JobsPage() {
           <ChevronLeft className="w-4 h-4" />
           <span>Previous</span>
         </Button>
-        <span className="text-xs font-semibold text-gray-400">
+        <span className="text-xs font-semibold text-slate-500 dark:text-gray-400">
           Page {page} of {Math.max(1, Math.ceil(total / 15))}
         </span>
         <Button
