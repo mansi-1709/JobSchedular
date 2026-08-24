@@ -7,6 +7,19 @@ import { Spinner } from '../components/ui/Spinner';
 import { Card, CardHeader } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { useJobUpdate } from '../context/SocketContext';
+import {
+  Cpu,
+  RotateCw,
+  Terminal,
+  Clock,
+  Server,
+  Layers,
+  ChevronRight,
+  Code2,
+  History,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react';
 
 export function JobDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -38,10 +51,9 @@ export function JobDetailPage() {
     fetchJobData();
   }, [id]);
 
-  // Real-time updates
+  // Real-time socket updates
   useJobUpdate((updatedJob) => {
     if (updatedJob.id === id) {
-      // Re-fetch everything to get the latest executions and logs
       fetchJobData();
     }
   });
@@ -60,103 +72,159 @@ export function JobDetailPage() {
     }
   };
 
-  if (loading) return <div className="flex justify-center py-10"><Spinner size="lg" /></div>;
-  if (!job) return <div className="text-center py-10 text-red-400">Job not found</div>;
+  if (loading) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (!job) {
+    return (
+      <div className="text-center py-20 text-rose-400">
+        <AlertCircle className="w-12 h-12 mx-auto mb-3" />
+        <p className="text-lg font-bold">Job Not Found</p>
+        <Link to="/jobs" className="btn-secondary btn-sm mt-4 inline-block">
+          Return to Jobs
+        </Link>
+      </div>
+    );
+  }
 
   const canRetry = job.status === 'FAILED' || job.status === 'DEAD_LETTER';
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-start">
+    <div className="space-y-6 animate-fade-in">
+      {/* Breadcrumbs & Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-indigo-950/50 via-surface-elevated/70 to-slate-900/60 border border-surface-border shadow-xl">
         <div>
-          <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
-            <Link to={`/queues/${job.queueId}`} className="hover:text-white transition-colors">{job.queue?.name}</Link>
-            <span>/</span>
-            <Link to="/jobs" className="hover:text-white transition-colors">Jobs</Link>
-            <span>/</span>
-            <span className="text-white font-mono text-xs">{job.id.substring(0,8)}...</span>
+          <div className="flex items-center gap-2 text-xs font-semibold text-gray-400 mb-2">
+            <Link to="/projects" className="hover:text-indigo-300">
+              Projects
+            </Link>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <Link to={`/queues/${job.queueId}`} className="hover:text-indigo-300 flex items-center gap-1">
+              <Layers className="w-3 h-3" />
+              {job.queue?.name || 'Queue'}
+            </Link>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <span className="text-indigo-300 font-mono">{job.id.substring(0, 10)}...</span>
           </div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-white">{job.name}</h1>
+            <h1 className="text-2xl font-black text-white">{job.name}</h1>
             <Badge status={job.status} />
           </div>
         </div>
-        <div className="flex gap-2">
+
+        <div className="flex items-center gap-3">
           {canRetry && (
-            <Button onClick={handleRetry} isLoading={isRetrying}>
-              Retry Job Manually
+            <Button
+              onClick={handleRetry}
+              isLoading={isRetrying}
+              className="bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30 flex items-center gap-2"
+            >
+              <RotateCw className="w-4 h-4" />
+              <span>Retry / Re-queue Job</span>
             </Button>
           )}
+          <button onClick={fetchJobData} className="btn-secondary btn-sm flex items-center gap-1.5">
+            <RotateCw className="w-3.5 h-3.5" />
+            <span>Refresh</span>
+          </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column: Metadata & Payload */}
         <div className="lg:col-span-1 space-y-6">
           <Card>
-            <CardHeader title="Details" />
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
+            <CardHeader title="Execution Metadata" />
+            <div className="space-y-3.5 text-xs mt-3">
+              <div className="flex justify-between py-1.5 border-b border-surface-border/50">
                 <span className="text-gray-400">Job ID</span>
-                <span className="font-mono text-xs">{job.id}</span>
+                <span className="font-mono text-gray-200 select-all">{job.id}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Type</span>
-                <span>{job.jobType}</span>
+              <div className="flex justify-between py-1.5 border-b border-surface-border/50">
+                <span className="text-gray-400">Execution Type</span>
+                <span className="font-semibold uppercase px-2 py-0.5 rounded bg-white/5 text-indigo-300">
+                  {job.jobType}
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Priority</span>
-                <span>{job.priority}</span>
+              <div className="flex justify-between py-1.5 border-b border-surface-border/50">
+                <span className="text-gray-400">Queue Priority</span>
+                <span className="font-bold text-white">{job.priority}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Attempts</span>
-                <span>{job.currentAttempt} / {job.maxRetries}</span>
+              <div className="flex justify-between py-1.5 border-b border-surface-border/50">
+                <span className="text-gray-400">Attempt Count</span>
+                <span className="text-gray-200">
+                  {job.currentAttempt} / {job.maxRetries}
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Created</span>
-                <span>{new Date(job.createdAt).toLocaleString()}</span>
+              <div className="flex justify-between py-1.5 border-b border-surface-border/50">
+                <span className="text-gray-400">Retry Strategy</span>
+                <span className="font-mono text-gray-300">{job.retryStrategy}</span>
+              </div>
+              <div className="flex justify-between py-1.5 border-b border-surface-border/50">
+                <span className="text-gray-400">Created At</span>
+                <span className="text-gray-300">{new Date(job.createdAt).toLocaleString()}</span>
               </div>
               {job.nextRetryAt && (
-                <div className="flex justify-between text-yellow-400">
-                  <span>Next Retry</span>
-                  <span>{new Date(job.nextRetryAt).toLocaleString()}</span>
+                <div className="flex justify-between py-1.5 bg-amber-500/10 px-2 rounded-lg text-amber-300 font-semibold">
+                  <span>Next Scheduled Retry</span>
+                  <span>{new Date(job.nextRetryAt).toLocaleTimeString()}</span>
                 </div>
               )}
             </div>
           </Card>
 
           <Card>
-            <CardHeader title="Payload" />
-            <pre className="bg-surface p-3 rounded-lg text-xs font-mono overflow-x-auto text-green-400 border border-surface-border">
+            <div className="flex items-center gap-2 border-b border-surface-border pb-3 mb-3">
+              <Code2 className="w-4 h-4 text-emerald-400" />
+              <h3 className="text-sm font-bold text-white">Input Payload</h3>
+            </div>
+            <pre className="bg-[#0b0c16] p-3.5 rounded-xl text-xs font-mono overflow-x-auto text-emerald-400 border border-emerald-500/20 shadow-inner">
               {JSON.stringify(job.payload, null, 2)}
             </pre>
           </Card>
         </div>
 
+        {/* Right Column: Execution History & Terminal Logs */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Execution History */}
           <Card>
-            <CardHeader title="Execution History" />
+            <div className="flex items-center gap-2 border-b border-surface-border pb-3 mb-4">
+              <History className="w-4 h-4 text-indigo-400" />
+              <h3 className="text-sm font-bold text-white">Attempt History</h3>
+            </div>
             {executions.length === 0 ? (
-              <p className="text-gray-400 text-sm">No executions yet.</p>
+              <div className="text-center py-6 text-gray-500 text-xs">No execution attempts recorded yet.</div>
             ) : (
               <div className="space-y-3">
-                {executions.map((exec) => (
-                  <div key={exec.id} className="p-3 rounded-lg bg-surface-elevated border border-surface-border">
+                {executions.map(exec => (
+                  <div
+                    key={exec.id}
+                    className="p-4 rounded-xl bg-surface-elevated/70 border border-surface-border hover:border-indigo-500/30 transition-all shadow-md"
+                  >
                     <div className="flex justify-between items-center mb-2">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2.5">
                         <Badge status={exec.status} />
-                        <span className="text-sm font-medium">Attempt {exec.attemptNumber}</span>
+                        <span className="text-xs font-bold text-white">Attempt #{exec.attemptNumber}</span>
                       </div>
-                      <span className="text-xs text-gray-400">
-                        {exec.durationMs ? `${exec.durationMs}ms` : 'Running...'}
+                      <span className="text-xs font-mono text-indigo-300 bg-indigo-950/40 px-2 py-0.5 rounded-md border border-indigo-800/40">
+                        {exec.durationMs ? `${exec.durationMs}ms duration` : 'Running In-Flight...'}
                       </span>
                     </div>
-                    <div className="text-xs text-gray-400 flex justify-between">
-                      <span>Worker: {exec.worker?.hostname || exec.workerId || 'Unknown'}</span>
-                      <span>{new Date(exec.startedAt).toLocaleString()}</span>
+                    <div className="text-xs text-gray-400 flex flex-wrap justify-between gap-2 mt-2">
+                      <span className="flex items-center gap-1 text-gray-300">
+                        <Server className="w-3.5 h-3.5 text-indigo-400" />
+                        Worker: {exec.worker?.hostname || exec.workerId || 'Auto Assigned'}
+                      </span>
+                      <span>Started: {new Date(exec.startedAt).toLocaleTimeString()}</span>
                     </div>
                     {exec.errorMessage && (
-                      <div className="mt-2 p-2 bg-red-950/30 text-red-300 text-xs rounded border border-red-900/50 break-words">
-                        {exec.errorMessage}
+                      <div className="mt-3 p-2.5 bg-rose-950/30 text-rose-300 text-xs font-mono rounded-lg border border-rose-900/50 break-words">
+                        ⚠️ {exec.errorMessage}
                       </div>
                     )}
                   </div>
@@ -165,16 +233,25 @@ export function JobDetailPage() {
             )}
           </Card>
 
+          {/* Live Terminal Logs */}
           <Card>
-            <CardHeader title="Job Logs" />
-            <div className="bg-surface p-4 rounded-lg border border-surface-border max-h-[400px] overflow-y-auto space-y-2">
+            <div className="flex items-center justify-between border-b border-surface-border pb-3 mb-3">
+              <div className="flex items-center gap-2">
+                <Terminal className="w-4 h-4 text-indigo-400" />
+                <h3 className="text-sm font-bold text-white">Live Execution Console Logs</h3>
+              </div>
+              <span className="text-[11px] font-mono text-gray-400">{logs.length} entries</span>
+            </div>
+            <div className="bg-[#080912] p-4 rounded-xl border border-indigo-950/60 max-h-[380px] overflow-y-auto space-y-2 font-mono text-xs shadow-inner">
               {logs.length === 0 ? (
-                <p className="text-gray-500 text-sm italic">No logs available.</p>
+                <p className="text-gray-600 text-xs italic py-4 text-center">No runtime logs streamed yet.</p>
               ) : (
-                logs.map((log) => (
-                  <div key={log.id} className={`log-entry log-${log.level.toLowerCase()}`}>
-                    <span className="text-gray-500 mr-3">{new Date(log.timestamp).toLocaleTimeString()}</span>
-                    <span>{log.message}</span>
+                logs.map(log => (
+                  <div key={log.id} className={`log-entry log-${log.level.toLowerCase()} flex items-start gap-2.5`}>
+                    <span className="text-gray-500 select-none text-[11px]">
+                      {new Date(log.timestamp).toLocaleTimeString()}
+                    </span>
+                    <span className="flex-1 break-words">{log.message}</span>
                   </div>
                 ))
               )}

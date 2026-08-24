@@ -3,6 +3,16 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/auth.service';
 import { Button } from '../components/ui/Button';
+import {
+  Zap,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Sparkles,
+  ArrowRight,
+  ShieldCheck,
+} from 'lucide-react';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
@@ -29,34 +39,82 @@ export function LoginPage() {
     }
   };
 
+  const fillDemo = (demoEmail: string, demoPass: string) => {
+    setEmail(demoEmail);
+    setPassword(demoPass);
+  };
+
   return (
-    <div className="card p-8 shadow-2xl">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">JobScheduler</h1>
-        <p className="text-gray-400">Sign in to manage your background jobs</p>
+    <div className="p-8 md:p-10 rounded-3xl bg-surface-elevated/80 border border-indigo-500/20 shadow-2xl backdrop-blur-2xl relative overflow-hidden animate-fade-in">
+      {/* Ambient background glow */}
+      <div className="absolute -top-24 -right-24 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Brand Header */}
+      <div className="text-center mb-8 relative">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 mx-auto flex items-center justify-center shadow-lg shadow-indigo-600/40 mb-3.5 ring-4 ring-indigo-500/10">
+          <Zap className="w-7 h-7 text-white fill-white" />
+        </div>
+        <h1 className="text-2xl font-black tracking-tight text-white">JobScheduler Control</h1>
+        <p className="text-xs text-gray-400 mt-1">High-throughput distributed async workload orchestrator</p>
       </div>
 
       {error && (
-        <div className="bg-red-900/50 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg mb-6 text-sm">
-          {error}
+        <div className="bg-rose-950/40 border border-rose-800/60 text-rose-300 px-4 py-3 rounded-xl mb-6 text-xs flex items-center gap-2">
+          <span>⚠️</span>
+          <span>{error}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Quick Demo Autofill Pills */}
+      <div className="mb-6 p-3.5 rounded-2xl bg-black/40 border border-white/5 space-y-2">
+        <div className="flex items-center justify-between text-[11px] text-gray-400">
+          <span className="flex items-center gap-1 font-semibold text-indigo-300">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+            Quick Demo Login:
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => fillDemo('admin@acme.com', 'password123')}
+            className="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-colors"
+          >
+            <span className="text-[10px] text-gray-400 block font-mono">ADMIN ROLE</span>
+            <span className="text-xs font-semibold text-indigo-200">admin@acme.com</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => fillDemo('developer@acme.com', 'password123')}
+            className="px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-colors"
+          >
+            <span className="text-[10px] text-gray-400 block font-mono">DEVELOPER ROLE</span>
+            <span className="text-xs font-semibold text-purple-200">developer@acme.com</span>
+          </button>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="label">Email Address</label>
+          <label className="label flex items-center gap-1.5">
+            <Mail className="w-3.5 h-3.5 text-indigo-400" />
+            Email Address
+          </label>
           <input
             type="email"
             required
             className="input"
             placeholder="you@example.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
           />
         </div>
 
         <div>
-          <label className="label">Password</label>
+          <label className="label flex items-center gap-1.5">
+            <Lock className="w-3.5 h-3.5 text-indigo-400" />
+            Password
+          </label>
           <div className="relative">
             <input
               type={showPassword ? 'text' : 'password'}
@@ -64,36 +122,31 @@ export function LoginPage() {
               className="input pr-10"
               placeholder="••••••••"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-              title={showPassword ? 'Hide password' : 'Show password'}
             >
-              {showPassword ? (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-              )}
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
         </div>
 
-        <Button type="submit" className="w-full" isLoading={isLoading}>
-          Sign In
+        <Button
+          type="submit"
+          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-600/30 py-2.5 font-bold flex items-center justify-center gap-2 mt-2"
+          isLoading={isLoading}
+        >
+          <span>Sign In to Cluster</span>
+          <ArrowRight className="w-4 h-4" />
         </Button>
       </form>
 
-      <div className="mt-6 text-center text-sm text-gray-400">
-        Don't have an account?{' '}
-        <Link to="/register" className="text-primary-400 hover:text-primary-300 transition-colors">
+      <div className="mt-6 text-center text-xs text-gray-400">
+        Need a new organization workspace?{' '}
+        <Link to="/register" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
           Register here
         </Link>
       </div>

@@ -5,6 +5,15 @@ import type { Project } from '../types/api.types';
 import { Button } from '../components/ui/Button';
 import { Spinner } from '../components/ui/Spinner';
 import { Card, CardHeader } from '../components/ui/Card';
+import {
+  FolderGit2,
+  PlusCircle,
+  Layers,
+  ArrowRight,
+  Calendar,
+  RotateCw,
+  Sparkles,
+} from 'lucide-react';
 
 export function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -41,64 +50,135 @@ export function ProjectsPage() {
     }
   };
 
-  if (loading) return <div className="flex justify-center py-10"><Spinner size="lg" /></div>;
+  if (loading) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6 animate-fade-in">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-indigo-950/50 via-surface-elevated/70 to-slate-900/60 border border-surface-border shadow-xl">
         <div>
-          <h1 className="text-2xl font-bold text-white">Projects</h1>
-          <p className="text-gray-400 text-sm mt-1">Manage your job scheduling projects</p>
+          <h1 className="text-2xl font-black text-white flex items-center gap-2.5">
+            <FolderGit2 className="w-6 h-6 text-indigo-400" />
+            Project Workspaces
+          </h1>
+          <p className="text-sm text-gray-400 mt-1">
+            Organize queues and manage job namespaces per organizational project ({projects.length} workspaces)
+          </p>
         </div>
-        <Button onClick={() => setIsCreating(true)}>+ New Project</Button>
+        <div className="flex items-center gap-3">
+          <button onClick={fetchProjects} className="btn-secondary btn-sm flex items-center gap-1.5">
+            <RotateCw className="w-3.5 h-3.5" />
+            <span>Refresh</span>
+          </button>
+          <Button
+            onClick={() => setIsCreating(true)}
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-600/30 flex items-center gap-2"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>New Project</span>
+          </Button>
+        </div>
       </div>
 
+      {/* Creation Modal */}
       {isCreating && (
-        <Card className="mb-6 border-primary-500/50 shadow-lg shadow-primary-900/20">
-          <CardHeader title="Create New Project" />
+        <Card className="border-indigo-500/40 bg-gradient-to-b from-indigo-950/40 to-surface/90 shadow-2xl p-6">
+          <div className="flex items-center justify-between border-b border-surface-border pb-4 mb-5">
+            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-indigo-400" />
+              Create Project Workspace
+            </h3>
+            <button onClick={() => setIsCreating(false)} className="text-gray-400 hover:text-white text-sm">
+              ✕
+            </button>
+          </div>
           <form onSubmit={handleCreate} className="space-y-4">
             <div>
-              <label className="label">Project Name</label>
-              <input type="text" required className="input" value={newProjectName} onChange={e => setNewProjectName(e.target.value)} />
+              <label className="label">Project Title</label>
+              <input
+                type="text"
+                required
+                className="input"
+                placeholder="e.g. Analytics Pipeline"
+                value={newProjectName}
+                onChange={e => setNewProjectName(e.target.value)}
+              />
             </div>
             <div>
-              <label className="label">Description (optional)</label>
-              <textarea className="input min-h-[80px]" value={newProjectDesc} onChange={e => setNewProjectDesc(e.target.value)} />
+              <label className="label">Description (Optional)</label>
+              <textarea
+                className="input min-h-[90px]"
+                placeholder="Briefly describe the workload and services in this project"
+                value={newProjectDesc}
+                onChange={e => setNewProjectDesc(e.target.value)}
+              />
             </div>
-            <div className="flex justify-end gap-3 pt-2">
-              <Button type="button" variant="secondary" onClick={() => setIsCreating(false)}>Cancel</Button>
-              <Button type="submit">Create Project</Button>
+            <div className="flex justify-end gap-3 pt-3 border-t border-surface-border">
+              <Button type="button" variant="secondary" onClick={() => setIsCreating(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-indigo-600 hover:bg-indigo-500 text-white">
+                Create Workspace
+              </Button>
             </div>
           </form>
         </Card>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => (
-          <Link key={project.id} to={`/projects/${project.id}`}>
-            <Card className="h-full hover:glow-border transition-all duration-300 cursor-pointer">
-              <h3 className="text-lg font-semibold text-white mb-2">{project.name}</h3>
-              <p className="text-sm text-gray-400 mb-6 line-clamp-2 min-h-[40px]">
-                {project.description || 'No description provided.'}
-              </p>
-              <div className="flex justify-between items-center text-xs text-gray-500 border-t border-surface-border pt-4">
-                <span>Created {new Date(project.createdAt).toLocaleDateString()}</span>
-                <span className="flex items-center gap-1 bg-surface-elevated px-2 py-1 rounded-md text-gray-300 border border-surface-border">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                  </svg>
-                  {project._count?.queues || 0} Queues
+      {/* Projects Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {projects.map(project => (
+          <Link key={project.id} to={`/projects/${project.id}`} className="group">
+            <div className="p-6 rounded-2xl bg-surface-elevated/70 border border-surface-border hover:border-indigo-500/50 transition-all duration-300 shadow-xl flex flex-col justify-between h-full group-hover:-translate-y-1">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
+                    <FolderGit2 className="w-5 h-5" />
+                  </div>
+                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-950/60 text-indigo-300 border border-indigo-800/40">
+                    <Layers className="w-3.5 h-3.5 text-indigo-400" />
+                    {project._count?.queues || 0} Queues
+                  </span>
+                </div>
+
+                <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors">
+                  {project.name}
+                </h3>
+                <p className="text-xs text-gray-400 mt-2 line-clamp-2 min-h-[34px]">
+                  {project.description || 'General application queues and task processing.'}
+                </p>
+              </div>
+
+              <div className="mt-5 pt-4 border-t border-surface-border/50 flex items-center justify-between text-xs text-gray-500">
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5 text-gray-400" />
+                  {new Date(project.createdAt).toLocaleDateString()}
+                </span>
+                <span className="text-indigo-400 group-hover:translate-x-1 transition-transform flex items-center gap-1 font-semibold">
+                  Open Project
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
-            </Card>
+            </div>
           </Link>
         ))}
 
         {projects.length === 0 && !isCreating && (
-          <div className="col-span-full py-12 text-center bg-surface-elevated rounded-xl border border-dashed border-surface-border">
-            <h3 className="text-lg font-medium text-white mb-2">No projects found</h3>
-            <p className="text-gray-400 mb-4">Create your first project to start organizing queues.</p>
-            <Button onClick={() => setIsCreating(true)}>Create Project</Button>
+          <div className="col-span-full py-16 text-center bg-surface-elevated/40 rounded-2xl border border-dashed border-surface-border">
+            <FolderGit2 className="w-12 h-12 mx-auto text-gray-600 mb-3" />
+            <h3 className="text-base font-bold text-white mb-1">No Projects Configured</h3>
+            <p className="text-xs text-gray-400 mb-4 max-w-sm mx-auto">
+              Create your first project workspace to start organizing queues and jobs.
+            </p>
+            <Button onClick={() => setIsCreating(true)} className="bg-indigo-600 hover:bg-indigo-500 text-white">
+              Create Project
+            </Button>
           </div>
         )}
       </div>
