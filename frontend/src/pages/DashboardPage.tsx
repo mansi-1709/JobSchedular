@@ -56,12 +56,12 @@ export function DashboardPage() {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-indigo-950/60 via-purple-950/40 to-slate-900/60 border border-indigo-500/20 shadow-xl backdrop-blur-xl">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-indigo-950/40 via-surface-elevated/70 to-slate-900/40 border border-indigo-500/20 shadow-xl backdrop-blur-xl">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-2.5">
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
             System Operations Control Center
           </h1>
-          <p className="text-sm text-gray-300/80 mt-1">
+          <p className="text-xs text-slate-500 dark:text-gray-300/80 mt-1">
             Real-time telemetry, asynchronous worker fleet monitoring, and queue throughput.
           </p>
         </div>
@@ -69,9 +69,9 @@ export function DashboardPage() {
           <button
             onClick={fetchMetrics}
             disabled={refreshing}
-            className="btn-secondary btn-sm flex items-center gap-2 border-indigo-500/30 text-gray-200 hover:text-white"
+            className="btn-secondary btn-sm flex items-center gap-2"
           >
-            <RotateCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-indigo-400' : ''}`} />
+            <RotateCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-indigo-500' : ''}`} />
             <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
           </button>
           <Link
@@ -86,13 +86,13 @@ export function DashboardPage() {
 
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Jobs Ingested" value={metrics.summary.total} />
-        <StatCard title="Queued (Pending Execution)" value={metrics.summary.queued} />
-        <StatCard title="Active Running Jobs" value={metrics.summary.running} trend="up" trendLabel="In Flight" />
-        <StatCard title="Successfully Completed" value={metrics.summary.completed} trend="up" trendLabel="Processed" />
-        <StatCard title="Failed Retrying Jobs" value={metrics.summary.failed} trend="down" trendLabel="Auto-Retrying" />
-        <StatCard title="Dead Letter Queue" value={metrics.summary.deadLetter} trend="down" trendLabel="Permanent Failures" />
-        <StatCard title="Active Worker Nodes" value={metrics.summary.activeWorkers} trend="up" trendLabel="Online" />
+        <StatCard title="Total Jobs Ingested" value={metrics.summary.total} color="indigo" />
+        <StatCard title="Queued (Pending Execution)" value={metrics.summary.queued} color="amber" />
+        <StatCard title="Active Running Jobs" value={metrics.summary.running} trend="up" trendLabel="In Flight" color="purple" />
+        <StatCard title="Successfully Completed" value={metrics.summary.completed} trend="up" trendLabel="Processed" color="emerald" />
+        <StatCard title="Failed Retrying Jobs" value={metrics.summary.failed} trend="down" trendLabel="Auto-Retrying" color="rose" />
+        <StatCard title="Dead Letter Queue" value={metrics.summary.deadLetter} trend="down" trendLabel="Permanent Failures" color="rose" />
+        <StatCard title="Active Worker Nodes" value={metrics.summary.activeWorkers} trend="up" trendLabel="Online" color="cyan" />
       </div>
 
       {/* Queue Health & Failures Grid */}
@@ -102,7 +102,7 @@ export function DashboardPage() {
           <CardHeader
             title="Queue Concurrency & Workload"
             action={
-              <Link to="/queues" className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
+              <Link to="/queues" className="text-xs font-semibold text-indigo-500 hover:text-indigo-400 flex items-center gap-1">
                 <span>Manage Queues</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
@@ -112,24 +112,24 @@ export function DashboardPage() {
             {metrics.queueStats.map((q) => (
               <div
                 key={q.queueId}
-                className="p-4 rounded-xl bg-surface-elevated/70 border border-surface-border/60 hover:border-indigo-500/40 transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md"
+                className="p-4 rounded-xl bg-surface-elevated/70 border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-indigo-400" />
-                    <h4 className="font-semibold text-white text-sm">{q.name}</h4>
+                    <Layers className="w-4 h-4 text-indigo-500" />
+                    <h4 className="font-bold text-slate-800 dark:text-white text-sm">{q.name}</h4>
                   </div>
-                  <div className="text-xs text-gray-400 mt-1.5 flex gap-4">
-                    <span>Total: <strong className="text-gray-200">{q.total}</strong></span>
-                    <span>Running: <strong className="text-indigo-300">{q.running}</strong></span>
+                  <div className="text-xs text-slate-500 dark:text-gray-400 mt-1.5 flex gap-4">
+                    <span>Total: <strong className="text-slate-700 dark:text-gray-200">{q.total}</strong></span>
+                    <span>Running: <strong className="text-indigo-600 dark:text-indigo-300">{q.running}</strong></span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                  <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
                     {q.completed} Completed
                   </span>
                   {q.failed > 0 && (
-                    <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-500/10 text-rose-300 border border-rose-500/20">
+                    <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/20">
                       {q.failed} Failed
                     </span>
                   )}
@@ -138,7 +138,7 @@ export function DashboardPage() {
             ))}
             {metrics.queueStats.length === 0 && (
               <div className="text-center py-8 text-gray-400">
-                <Layers className="w-10 h-10 mx-auto text-gray-600 mb-2" />
+                <Layers className="w-10 h-10 mx-auto text-gray-400 mb-2" />
                 <p className="text-sm">No queues configured yet. Create a queue in Projects.</p>
               </div>
             )}
@@ -150,7 +150,7 @@ export function DashboardPage() {
           <CardHeader
             title="Dead Letter & Recent Incident Log"
             action={
-              <Link to="/dlq" className="text-xs font-semibold text-rose-400 hover:text-rose-300 flex items-center gap-1">
+              <Link to="/dlq" className="text-xs font-semibold text-rose-500 hover:text-rose-400 flex items-center gap-1">
                 <span>View DLQ</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
@@ -160,16 +160,16 @@ export function DashboardPage() {
             {metrics.recentFailures.map((job) => (
               <div
                 key={job.id}
-                className="p-3.5 rounded-xl bg-rose-950/20 border border-rose-900/40 hover:border-rose-700/50 transition-all duration-200 flex justify-between items-center gap-3"
+                className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 hover:border-rose-500/40 transition-all duration-200 flex justify-between items-center gap-3"
               >
                 <div className="overflow-hidden flex-1">
                   <div className="flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />
-                    <Link to={`/jobs/${job.id}`} className="font-semibold text-sm text-rose-200 hover:text-rose-100 truncate">
+                    <AlertTriangle className="w-4 h-4 text-rose-500 flex-shrink-0" />
+                    <Link to={`/jobs/${job.id}`} className="font-semibold text-sm text-slate-800 dark:text-rose-200 hover:text-rose-600 dark:hover:text-rose-100 truncate">
                       {job.name}
                     </Link>
                   </div>
-                  <p className="text-xs text-gray-400 mt-1 truncate">
+                  <p className="text-xs text-slate-500 dark:text-gray-400 mt-1 truncate">
                     Queue: {job.queue?.name || 'Default'} • Attempt {job.currentAttempt}/{job.maxRetries}
                   </p>
                 </div>
@@ -178,9 +178,9 @@ export function DashboardPage() {
             ))}
             {metrics.recentFailures.length === 0 && (
               <div className="text-center py-10 text-gray-400 flex flex-col items-center justify-center">
-                <CheckCircle2 className="w-12 h-12 text-emerald-400/60 mb-3 animate-pulse" />
-                <p className="text-sm font-medium text-gray-200">Zero active system incidents.</p>
-                <p className="text-xs text-gray-500 mt-1">All background workloads are executing within SLA thresholds.</p>
+                <CheckCircle2 className="w-12 h-12 text-emerald-500/60 mb-3 animate-pulse" />
+                <p className="text-sm font-semibold text-slate-800 dark:text-gray-200">Zero active system incidents.</p>
+                <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">All background workloads are executing within SLA thresholds.</p>
               </div>
             )}
           </div>
