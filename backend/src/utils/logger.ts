@@ -1,0 +1,19 @@
+import pino from 'pino';
+import { config } from '../config/env';
+
+export const logger = pino({
+  level: config.nodeEnv === 'test' ? 'silent' : config.nodeEnv === 'production' ? 'info' : 'debug',
+  transport:
+    config.nodeEnv !== 'production' && config.nodeEnv !== 'test'
+      ? {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+            translateTime: 'HH:MM:ss',
+            ignore: 'pid,hostname',
+          },
+        }
+      : undefined,
+});
+
+export default logger;

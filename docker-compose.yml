@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: jobscheduler
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d jobscheduler"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/jobscheduler?schema=public
+      - JWT_SECRET=super_secret_jwt_key_for_dev
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "npx prisma migrate deploy && node dist/server.js"
+
+  worker-1:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/jobscheduler?schema=public
+      - BACKEND_URL=http://backend:3000
+      - WORKER_CONCURRENCY=5
+      - POLL_INTERVAL_MS=2000
+    depends_on:
+      backend:
+        condition: service_started
+
+  worker-2:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/jobscheduler?schema=public
+      - BACKEND_URL=http://backend:3000
+      - WORKER_CONCURRENCY=5
+      - POLL_INTERVAL_MS=2000
+    depends_on:
+      backend:
+        condition: service_started
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
